@@ -1,0 +1,38 @@
+# Final Year Project Report Template
+
+## Title
+Retail Inventory Analysis with Demand Forecasting
+
+## Abstract
+This project analyzes retail sales and inventory data to identify sales patterns, monitor stock levels, and estimate future demand. Python is used for data cleaning, exploratory analysis, and time-series forecasting; MySQL stores and queries structured data; Excel supports initial inspection; and Power BI presents interactive dashboards. The included academic dataset is synthetic.
+
+## Problem Statement
+Retailers may face overstocking and stockouts when inventory decisions are not supported by timely sales analysis and demand estimates. This project demonstrates a data-driven approach to analyzing sales and monitoring inventory.
+
+## Objectives
+1. Analyze sales and revenue trends.
+2. Identify top-performing products and categories.
+3. Detect products whose stock is at or below reorder level.
+4. Forecast short-term demand using historical sales.
+5. Present key findings in an interactive dashboard.
+
+## Scope
+The prototype covers sample multi-store sales, product information, supplier information, an inventory snapshot, and a 30-day total-demand forecast.
+
+## Methodology
+Data collection -> data validation/cleaning -> SQL storage and querying -> exploratory data analysis -> forecasting -> dashboarding -> interpretation.
+
+## Tools
+Python (Pandas, NumPy, Matplotlib, Statsmodels, Scikit-learn), MySQL, Excel, Power BI.
+
+## Results
+Insert actual results after running the scripts: total sales, total revenue, top products, low-stock count, and forecasting MAE/RMSE/MAPE. Do not invent performance values.
+
+## Limitations
+The dataset is synthetic; inventory is a snapshot rather than a transaction ledger; forecasting is an academic baseline and should be validated before operational use.
+
+## Future Scope
+Product-level and store-level forecasting, promotion/holiday features, automated database refresh, supplier lead-time modeling, reorder quantity optimization, and deployment to a cloud dashboard.
+
+## Conclusion
+The prototype demonstrates how analytics and time-series forecasting can support retail inventory decisions. Its results are illustrative because the dataset is synthetic.

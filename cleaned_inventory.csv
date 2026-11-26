@@ -1,0 +1,40 @@
+# Power BI build guide
+
+## Recommended model
+Use a star-schema style model:
+- FactSales: sales.csv
+- DimProduct: products.csv
+- DimStore: stores.csv
+- FactInventory: inventory.csv
+- FactForecast: reports/demand_forecast_30_days.csv
+
+Relationships:
+- DimProduct[product_id] -> FactSales[product_id] (1 to many)
+- DimStore[store_id] -> FactSales[store_id] (1 to many)
+- DimProduct[product_id] -> FactInventory[product_id] (1 to many)
+- DimStore[store_id] -> FactInventory[store_id] (1 to many)
+
+Create a date table:
+Calendar = CALENDAR(MIN(Sales[sale_date]), MAX(Sales[sale_date]))
+Add Year, Month Number, Month Name columns and sort Month Name by Month Number.
+Relate Calendar[Date] to Sales[sale_date].
+
+## Measures
+Total Revenue = SUM(Sales[revenue])
+Total Units Sold = SUM(Sales[quantity_sold])
+Total Transactions = DISTINCTCOUNT(Sales[sale_id])
+Average Selling Price = DIVIDE([Total Revenue], [Total Units Sold])
+Low Stock Items = COUNTROWS(FILTER(Inventory, Inventory[stock_quantity] <= Inventory[reorder_level]))
+Forecast Units = SUM(Forecast[forecast_units])
+
+## Layout
+Page 1 - Executive Overview:
+KPI cards: Total Revenue, Total Units Sold, Total Transactions, Low Stock Items.
+Line chart: monthly revenue. Bar chart: revenue by category. Slicers: year, store, category.
+
+Page 2 - Product Analysis:
+Bar chart: top 10 products by units sold. Matrix: product, category, units, revenue.
+Page 3 - Inventory:
+Table: store, product, stock quantity, reorder level. Conditional formatting for low stock.
+Page 4 - Demand Forecast:
+Line chart with daily historical demand and forecast. Add forecast date and forecast units.

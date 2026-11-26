@@ -1,0 +1,87 @@
+# Retail Inventory Analysis with Demand Forecasting
+
+## Project note
+This starter project uses **synthetic/sample data** generated for academic demonstration. It is not real business data.
+
+## 1. Folder contents
+- `dataset/`: sales, products, stores, suppliers, inventory CSV files
+- `excel/`: original and cleaned Excel workbooks
+- `sql/`: MySQL schema and analysis queries
+- `python/`: cleaning, EDA, forecasting scripts
+- `reports/`: generated analysis outputs (after running scripts)
+- `dashboard/`: place your Power BI `.pbix` file here
+
+## 2. Setup
+Install Python 3.10+ and MySQL 8+.
+```bash
+python -m venv .venv
+# Windows:
+.venv\Scripts\activate
+# macOS/Linux:
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+## 3. Run Python scripts
+Run from the project root:
+```bash
+python python/01_data_cleaning.py
+python python/02_analysis.py
+python python/03_demand_forecasting.py
+```
+
+## 4. MySQL
+Open MySQL Workbench and run `sql/schema.sql`.
+Import the CSV files into their matching tables using Table Data Import Wizard.
+Then run `sql/analysis_queries.sql`.
+
+Recommended import order: stores, suppliers, products, sales, inventory.
+
+## 5. Power BI
+Use Get Data > Text/CSV to import:
+- `dataset/sales.csv`
+- `dataset/products.csv`
+- `dataset/stores.csv`
+- `dataset/inventory.csv`
+- `reports/demand_forecast_30_days.csv` (after forecasting script)
+
+Create relationships:
+- Products[product_id] 1:* Sales[product_id]
+- Stores[store_id] 1:* Sales[store_id]
+- Products[product_id] 1:* Inventory[product_id]
+- Stores[store_id] 1:* Inventory[store_id]
+
+Create a Calendar table in Power BI and relate Calendar[Date] to Sales[sale_date].
+
+## 6. Suggested Power BI DAX measures
+Total Revenue = SUM(Sales[revenue])
+Total Units Sold = SUM(Sales[quantity_sold])
+Total Transactions = DISTINCTCOUNT(Sales[sale_id])
+Average Selling Price = DIVIDE([Total Revenue], [Total Units Sold])
+Estimated Gross Profit = SUMX(Sales, Sales[quantity_sold] * (Sales[unit_price] * (1-Sales[discount_pct]) - RELATED(Products[unit_cost])))
+Low Stock Items = COUNTROWS(FILTER(Inventory, Inventory[stock_quantity] <= Inventory[reorder_level]))
+Forecast Units = SUM(Forecast[forecast_units])
+
+## 7. Dashboard pages
+1. Executive Overview: Revenue, units, transactions, monthly trend
+2. Product & Category Analysis: top products, category revenue, product filters
+3. Inventory Monitoring: stock by store/product, low-stock table
+4. Demand Forecast: actual daily demand and next-30-day forecast
+
+## 8. Forecasting methodology
+The starter model aggregates daily units sold and uses Holt-Winters Exponential Smoothing with a 7-day seasonal period. The last 30 days are held out for chronological evaluation. Metrics: MAE, RMSE, and MAPE. MAPE may be undefined or unstable when actual demand is zero; interpret it carefully.
+
+## 9. Academic limitations
+- Dataset is synthetic and designed for learning.
+- Inventory is a point-in-time sample snapshot, not a full stock movement ledger.
+- Forecast is total-store daily demand; product-level forecasting can be added by filtering each product.
+- Estimated gross profit excludes overheads, tax, and other operating expenses.
+
+## Integrated Streamlit prototype
+Install packages from `requirements_major.txt`, then run:
+
+```bash
+pip install -r requirements_major.txt
+streamlit run app.py
+```
+This prototype currently provides overview, product analysis, store analysis, and inventory recommendation pages. It uses the bundled synthetic CSV data. The recommendations use historical average demand and adjustable lead-time/safety-stock assumptions; validate these assumptions before reporting them as operational recommendations. Demand forecasting and MySQL/Power BI integration are the next development stages.
